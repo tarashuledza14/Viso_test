@@ -1,3 +1,4 @@
+import { Point } from '@/app/_component/markers'
 import { ICoordinatesData, IMarkerResponse } from '@/interfaces/map.interfaces'
 import { db } from '@/utils/firebase.config'
 import {
@@ -17,6 +18,7 @@ export const MapService = {
 			const docRef = await addDoc(collection(db, MARKER), {
 				lat: data.lat,
 				lng: data.lng,
+				date: new Date(),
 			})
 			return docRef
 		} catch (error) {
@@ -43,12 +45,13 @@ export const MapService = {
 			throw new Error('Failed to delete marker coordinates')
 		}
 	},
-	async updateMarker(id: string, data: ICoordinatesData) {
-		const docRef = doc(db, MARKER, id)
+	async updateMarker(marker: Point) {
+		const docRef = doc(db, MARKER, marker.id)
 		try {
 			await updateDoc(docRef, {
-				lat: data.lat,
-				lng: data.lng,
+				date: marker.date,
+				lat: marker.lat,
+				lng: marker.lng,
 			})
 		} catch (error) {
 			throw new Error('Failed to update marker coordinates')

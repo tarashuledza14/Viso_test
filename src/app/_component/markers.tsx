@@ -2,13 +2,18 @@ import { useDeleteMarkerMutation } from '@/mutations/useDeleteMarkerMutation'
 import { useUpdateMarkerMutation } from '@/mutations/useUpdateMarkerMutation'
 import { useMarkerQuery } from '@/queries/useMarkerQuery'
 import { Marker, MarkerClusterer } from '@googlemaps/markerclusterer'
-import { AdvancedMarker, useMap } from '@vis.gl/react-google-maps'
+import { AdvancedMarker, Pin, useMap } from '@vis.gl/react-google-maps'
+import { Timestamp } from 'firebase/firestore'
 import { useEffect, useRef, useState } from 'react'
 
-type Point = google.maps.LatLngLiteral & { key: string; id: string }
+export type Point = google.maps.LatLngLiteral & {
+	key: string
+	id: string
+	date?: Timestamp
+}
 
 const Markers = () => {
-	const { data: initialMarkers } = useMarkerQuery()
+	const { data: markers } = useMarkerQuery()
 
 	const map = useMap()
 	const { mutateAsync: deleteMarker } = useDeleteMarkerMutation()
@@ -51,9 +56,10 @@ const Markers = () => {
 	const onDragMarker = (marker: Point) => {
 		updateMarker(marker)
 	}
+
 	return (
 		<>
-			{initialMarkers?.map(point => (
+			{markers?.map(point => (
 				<AdvancedMarker
 					onClick={() => handleMarkerClick(point.id)}
 					position={point as google.maps.LatLngLiteral}
@@ -64,11 +70,12 @@ const Markers = () => {
 							id: point.id,
 							lat: e.latLng?.lat() ?? 0,
 							lng: e.latLng?.lng() ?? 0,
+							date: point.date,
 							key: point.key,
 						})
 					}
 				>
-					<span style={{ fontSize: '2rem' }}>🌳</span>
+					<Pin />
 				</AdvancedMarker>
 			))}
 		</>

@@ -6,11 +6,12 @@ export const useMarkerQuery = () => {
 		queryKey: ['get-markers'],
 		queryFn: () => MapService.getMarker(),
 		select: data =>
-			data.map(({ id, lat, lng }) => ({
+			data.map(({ id, lat, lng, date }) => ({
 				id,
 				lat,
 				lng,
-				key: JSON.stringify({ id, lat, lng }),
+				date,
+				key: JSON.stringify({ id, lat, lng, date }),
 			})),
 	})
 }
